@@ -125,4 +125,16 @@ public class UserController {
         throw new CustomException(USER_FAILURE_PROMOTING_MESSAGE);
     }
 
+    @PostMapping(value = "/demote")
+    public ResponseEntity demoteUser(@RequestParam(name = "id") String id) throws Exception {
+        boolean resultOfDemoting = this.userService.demoteUser(id);
+
+        if (resultOfDemoting) {
+
+            SuccessResponse successResponse = successResponseBuilder(LocalDateTime.now(), SUCCESSFUL_USER_DEMOTED_MESSAGE, "", true);
+            return new ResponseEntity<>(this.objectMapper.writeValueAsString(successResponse), HttpStatus.OK);
+        }
+        throw new CustomException(USER_FAILURE_DEMOTING_MESSAGE);
+    }
+
 }
