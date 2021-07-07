@@ -113,5 +113,16 @@ public class UserController {
 
         throw new CustomException(SERVER_ERROR_MESSAGE);
     }
+    @PostMapping(value = "/promote")
+    public ResponseEntity promoteUser(@RequestParam(name = "id") String id) throws Exception {
+        boolean resultOfPromoting = this.userService.promoteUser(id);
+
+        if (resultOfPromoting) {
+            SuccessResponse successResponse = successResponseBuilder(LocalDateTime.now(), SUCCESSFUL_USER_PROMOTED_MESSAGE, "", true);
+            return new ResponseEntity<>(this.objectMapper.writeValueAsString(successResponse), HttpStatus.OK);
+        }
+
+        throw new CustomException(USER_FAILURE_PROMOTING_MESSAGE);
+    }
 
 }
