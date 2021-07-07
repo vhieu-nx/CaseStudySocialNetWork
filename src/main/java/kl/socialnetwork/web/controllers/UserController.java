@@ -102,5 +102,16 @@ public class UserController {
 
         throw new CustomException(SERVER_ERROR_MESSAGE);
     }
+    @DeleteMapping(value = "/delete/{id}")
+    public ResponseEntity<Object> deleteUser(@PathVariable String id) throws Exception {
+        boolean result = this.userService.deleteUserById(id);
+
+        if(result){
+            SuccessResponse successResponse = successResponseBuilder(LocalDateTime.now(), SUCCESSFUL_USER_DELETE_MESSAGE, "", true);
+            return new ResponseEntity<>(this.objectMapper.writeValueAsString(successResponse), HttpStatus.OK);
+        }
+
+        throw new CustomException(SERVER_ERROR_MESSAGE);
+    }
 
 }
