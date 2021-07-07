@@ -27,12 +27,14 @@ public class PostController {
         Post post = postService.findById(id);
         return new ResponseEntity<>(post, HttpStatus.OK);
     }
+
     @GetMapping("/get-all-post-by-user-id/{id}")
     public ResponseEntity<List<Post>> getAllPostByUserId(@PathVariable Long id) {
         AppUser guestUser = userService.findById(id);
 
         return new ResponseEntity<>(postService.findAllByAppUser(guestUser), HttpStatus.OK);
     }
+
     @GetMapping("/get-all-post")
     public ResponseEntity<List<Post>> getAllMyPost() {
 
@@ -52,6 +54,7 @@ public class PostController {
         });
         return new ResponseEntity<>(postList, HttpStatus.OK);
     }
+
     @DeleteMapping("/delete-post/{id}")
     public ResponseEntity<Post> deletePostById(@PathVariable Long id) {
 
@@ -67,6 +70,7 @@ public class PostController {
         }
         return new ResponseEntity<>(p, HttpStatus.OK);
     }
+
     @PostMapping("/create-new-post")
     public ResponseEntity<Post> createNewPost(@RequestBody Post post) {
         AppUser currentUser = userService.getCurrentUser();
@@ -76,6 +80,14 @@ public class PostController {
         Post p = postService.save(post);
         return new ResponseEntity<>(p, HttpStatus.OK);
     }
+
+    @PutMapping("/update-post")
+    public ResponseEntity<Post> updatePost(@RequestBody Post post) {
+        post.setCreatedTime(Timestamp.valueOf(LocalDateTime.now()));
+        Post p = postService.save(post);
+        return new ResponseEntity<>(p, HttpStatus.OK);
+    }
+
 
 
 }
