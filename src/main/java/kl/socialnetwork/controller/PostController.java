@@ -7,10 +7,10 @@ import kl.socialnetwork.service.user.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -65,6 +65,15 @@ public class PostController {
         if (currentUser.equals(p.getAppUser())) {
             postService.deleteById(id);
         }
+        return new ResponseEntity<>(p, HttpStatus.OK);
+    }
+    @PostMapping("/create-new-post")
+    public ResponseEntity<Post> createNewPost(@RequestBody Post post) {
+        AppUser currentUser = userService.getCurrentUser();
+        post.setCreatedTime(Timestamp.valueOf(LocalDateTime.now()));
+        post.setAppUser(currentUser);
+        //to show latest created post
+        Post p = postService.save(post);
         return new ResponseEntity<>(p, HttpStatus.OK);
     }
 
