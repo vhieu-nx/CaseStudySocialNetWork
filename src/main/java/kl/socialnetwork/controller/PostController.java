@@ -7,6 +7,7 @@ import kl.socialnetwork.service.user.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -50,6 +51,21 @@ public class PostController {
             }
         });
         return new ResponseEntity<>(postList, HttpStatus.OK);
+    }
+    @DeleteMapping("/delete-post/{id}")
+    public ResponseEntity<Post> deletePostById(@PathVariable Long id) {
+
+//        AppUser currentUser = new AppUser();
+//        currentUser.setId(1L);
+        AppUser currentUser = userService.getCurrentUser();
+
+        //to show the deleted post
+        Post p = postService.findById(id);
+        //check
+        if (currentUser.equals(p.getAppUser())) {
+            postService.deleteById(id);
+        }
+        return new ResponseEntity<>(p, HttpStatus.OK);
     }
 
 
