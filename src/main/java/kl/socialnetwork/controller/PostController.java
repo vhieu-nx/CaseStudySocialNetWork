@@ -93,6 +93,12 @@ public class PostController {
         user.setPassword(null);
         return new ResponseEntity<>(user,HttpStatus.OK);
     }
+    @GetMapping("/get-user-by-id/{id}")
+    public ResponseEntity<AppUser> getUserById(@PathVariable Long id) {
+        AppUser user = userService.findById(id);
+        user.setPassword(null);
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
 
 
 
