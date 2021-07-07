@@ -3,6 +3,7 @@ package kl.socialnetwork.controller;
 import kl.socialnetwork.model.AppUser;
 import kl.socialnetwork.model.Post;
 import kl.socialnetwork.model.PostStatus;
+import kl.socialnetwork.repository.IPostStatusService;
 import kl.socialnetwork.service.post.IPostService;
 import kl.socialnetwork.service.user.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,8 @@ public class PostController {
     @Autowired
     IUserService userService;
 
+    @Autowired
+    IPostStatusService postStatusService;
     @GetMapping("/get-post/{id}")
     public ResponseEntity<Post> getPostById(@PathVariable Long id) {
         Post post = postService.findById(id);
@@ -100,10 +103,10 @@ public class PostController {
         user.setPassword(null);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
-//    @GetMapping("/get-Post-status")
-//    public ResponseEntity<List<PostStatus>> getAllPostStatus(){
-//        return  new ResponseEntity<>()
-//    }
+    @GetMapping("/get-Post-status")
+    public ResponseEntity<List<PostStatus>> getAllPostStatus(){
+        return  new ResponseEntity<>(postStatusService.findALl(),HttpStatus.OK);
+    }
 //    @GetMapping("/get-Post-status")
 //    public ResponseEntity<List<PostStatus>> getAllPostStatus() {
 //        return new ResponseEntity<>(postStatusService.findALl(), HttpStatus.OK);
