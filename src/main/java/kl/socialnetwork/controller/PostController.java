@@ -87,6 +87,12 @@ public class PostController {
         Post p = postService.save(post);
         return new ResponseEntity<>(p, HttpStatus.OK);
     }
+    @GetMapping("/get-current-user")
+    public ResponseEntity<AppUser> getCurrentUser(){
+        AppUser user = userService.getCurrentUser();
+        user.setPassword(null);
+        return new ResponseEntity<>(user,HttpStatus.OK);
+    }
 
 
 
