@@ -3,6 +3,7 @@ package kl.socialnetwork.web.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kl.socialnetwork.domain.models.bindingModels.user.UserRegisterBindingModel;
 import kl.socialnetwork.domain.models.serviceModels.UserServiceModel;
+import kl.socialnetwork.domain.models.viewModels.user.UserAllViewModel;
 import kl.socialnetwork.domain.models.viewModels.user.UserCreateViewModel;
 import kl.socialnetwork.services.UserService;
 import kl.socialnetwork.utils.responseHandler.exceptions.BadRequestException;
@@ -13,13 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static kl.socialnetwork.utils.constants.ResponseMessageConstants.PASSWORDS_MISMATCH_ERROR_MESSAGE;
 import static kl.socialnetwork.utils.constants.ResponseMessageConstants.SUCCESSFUL_REGISTER_MESSAGE;
@@ -60,6 +60,19 @@ public class UserController {
     }
     private SuccessResponse successResponseBuilder(LocalDateTime timestamp, String message, Object payload, boolean success) {
         return new SuccessResponse(timestamp, message, payload, success);
+    }
+
+    @GetMapping(value = "/all/{id}")
+    public List<UserAllViewModel> getAllUsers(@PathVariable(value = "id") String userId) throws Exception {
+        List<UserServiceModel> allUsers = this.userService.getAllUsers(userId);
+
+        return allUsers.stream()
+                .map(x -> {
+                    UserAllViewModel userAllViewModel = this.modelMapper.map(x, UserAllViewModel.class);
+                    userAllViewModel.setRole(x.extractAuthority());
+                    return userAllViewModel;
+                })
+                .collect(Collectors.toList());
     }
 
 }
