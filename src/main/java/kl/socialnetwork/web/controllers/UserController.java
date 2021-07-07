@@ -2,12 +2,14 @@ package kl.socialnetwork.web.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kl.socialnetwork.domain.models.bindingModels.user.UserRegisterBindingModel;
+import kl.socialnetwork.domain.models.bindingModels.user.UserUpdateBindingModel;
 import kl.socialnetwork.domain.models.serviceModels.UserServiceModel;
 import kl.socialnetwork.domain.models.viewModels.user.UserAllViewModel;
 import kl.socialnetwork.domain.models.viewModels.user.UserCreateViewModel;
 import kl.socialnetwork.domain.models.viewModels.user.UserDetailsViewModel;
 import kl.socialnetwork.services.UserService;
 import kl.socialnetwork.utils.responseHandler.exceptions.BadRequestException;
+import kl.socialnetwork.utils.responseHandler.exceptions.CustomException;
 import kl.socialnetwork.utils.responseHandler.successResponse.SuccessResponse;
 import kl.socialnetwork.validations.serviceValidation.services.UserValidationService;
 import org.modelmapper.ModelMapper;
@@ -22,8 +24,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static kl.socialnetwork.utils.constants.ResponseMessageConstants.PASSWORDS_MISMATCH_ERROR_MESSAGE;
-import static kl.socialnetwork.utils.constants.ResponseMessageConstants.SUCCESSFUL_REGISTER_MESSAGE;
+import static kl.socialnetwork.utils.constants.ResponseMessageConstants.*;
 
 @RestController
 @RequestMapping(value = "/users")
@@ -81,6 +82,25 @@ public class UserController {
         UserDetailsViewModel user = this.userService.getById(id);
 
         return new ResponseEntity<>(this.objectMapper.writeValueAsString(user), HttpStatus.OK);
+    }
+
+    @PutMapping(value = "/update/{id}")
+    public ResponseEntity updateUser(@RequestBody @Valid UserUpdateBindingModel userUpdateBindingModel,
+                                     @PathVariable(value = "id") String loggedInUserId) throws Exception {
+
+        if(!userValidationService.isValid(userUpdateBindingModel)){
+            throw new Exception(SERVER_ERROR_MESSAGE);
+        }
+
+        UserServiceModel userServiceModel = this.modelMapper.map(userUpdateBindingModel, UserServiceModel.class);
+        boolean result = this.userService.updateUser(userServiceModel, loggedInUserId);
+
+        if (result) {
+            SuccessResponse successResponse = successResponseBuilder(LocalDateTime.now(), SUCCESSFUL_USER_PROFILE_EDIT_MESSAGE, "", true);
+            return new ResponseEntity<>(this.objectMapper.writeValueAsString(successResponse), HttpStatus.OK);
+        }
+
+        throw new CustomException(SERVER_ERROR_MESSAGE);
     }
 
 }
