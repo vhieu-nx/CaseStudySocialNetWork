@@ -5,8 +5,10 @@ import kl.socialnetwork.domain.models.serviceModels.UserServiceModel;
 import kl.socialnetwork.domain.models.viewModels.user.UserCreateViewModel;
 import kl.socialnetwork.domain.models.viewModels.user.UserDetailsViewModel;
 import kl.socialnetwork.domain.models.viewModels.user.UserEditViewModel;
+import kl.socialnetwork.repositories.RoleRepository;
 import kl.socialnetwork.repositories.UserRepository;
 import kl.socialnetwork.services.UserService;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -18,9 +20,13 @@ import java.util.List;
 @Transactional
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final ModelMapper modelMapper;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, ModelMapper modelMapper) {
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.modelMapper = modelMapper;
     }
 
     @Override
