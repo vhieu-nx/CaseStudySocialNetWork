@@ -8,7 +8,6 @@ import kl.socialnetwork.domain.models.viewModels.user.UserEditViewModel;
 import kl.socialnetwork.repositories.RoleRepository;
 import kl.socialnetwork.repositories.UserRepository;
 import kl.socialnetwork.services.UserService;
-import org.modelmapper.ModelMapper;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -21,13 +20,25 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    private final ModelMapper modelMapper;
 
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, ModelMapper modelMapper) {
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
-        this.modelMapper = modelMapper;
     }
+//    private final ModelMapper modelMapper;
+//    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+//    private final UserValidationService userValidation;
+//    private final LoggerService loggerService;
+
+
+//    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, ModelMapper modelMapper, BCryptPasswordEncoder bCryptPasswordEncoder, UserValidationService userValidation, LoggerService loggerService) {
+//        this.userRepository = userRepository;
+//        this.roleRepository = roleRepository;
+//        this.modelMapper = modelMapper;
+//        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+//        this.userValidation = userValidation;
+//        this.loggerService = loggerService;
+//    }
 
     @Override
     public UserCreateViewModel createUser(UserServiceModel userRegisterBindingModel) {
