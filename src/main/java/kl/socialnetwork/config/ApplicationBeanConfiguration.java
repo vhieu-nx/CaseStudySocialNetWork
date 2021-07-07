@@ -2,11 +2,11 @@ package kl.socialnetwork.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-@Configurable
+@Configuration
 public class ApplicationBeanConfiguration {
     @Bean
     public ModelMapper modelMapper(){
@@ -23,3 +23,4 @@ public class ApplicationBeanConfiguration {
         return new BCryptPasswordEncoder();
     }
 }
+

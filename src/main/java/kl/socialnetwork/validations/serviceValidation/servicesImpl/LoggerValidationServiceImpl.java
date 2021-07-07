@@ -1,4 +1,4 @@
-package kl.socialnetwork.servicesImpl;
+package kl.socialnetwork.validations.serviceValidation.servicesImpl;
 
 import kl.socialnetwork.domain.models.serviceModels.LoggerServiceModel;
 import kl.socialnetwork.validations.serviceValidation.services.LoggerValidationService;

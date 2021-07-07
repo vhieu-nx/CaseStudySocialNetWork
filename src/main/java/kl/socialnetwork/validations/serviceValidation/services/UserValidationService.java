@@ -1,5 +1,4 @@
 package kl.socialnetwork.validations.serviceValidation.services;
-
 import kl.socialnetwork.domain.entities.User;
 import kl.socialnetwork.domain.models.bindingModels.user.UserRegisterBindingModel;
 import kl.socialnetwork.domain.models.bindingModels.user.UserUpdateBindingModel;
