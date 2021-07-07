@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class PostController {
@@ -30,5 +32,25 @@ public class PostController {
 
         return new ResponseEntity<>(postService.findAllByAppUser(guestUser), HttpStatus.OK);
     }
+    @GetMapping("/get-all-post")
+    public ResponseEntity<List<Post>> getAllMyPost() {
+
+        AppUser currentUser = userService.getCurrentUser();
+
+        List<Post> postList = postService.findAllByAppUser(currentUser);
+        Collections.sort(postList, new Comparator<Post>() {
+            @Override
+            public int compare(Post o1, Post o2) {
+                if (o1.getCreatedTime().getTime() > o2.getCreatedTime().getTime()) {
+                    return 1;
+                } else if (o1.getCreatedTime().getTime() < o2.getCreatedTime().getTime()) {
+                    return -1;
+                }
+                return 0;
+            }
+        });
+        return new ResponseEntity<>(postList, HttpStatus.OK);
+    }
+
 
 }
