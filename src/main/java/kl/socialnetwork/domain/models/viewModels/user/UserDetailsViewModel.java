@@ -1,4 +1,4 @@
-package kl.socialnetwork.models.viewModels.user;
+package kl.socialnetwork.domain.models.viewModels.user;
 
 import kl.socialnetwork.domain.entities.UserRole;
 

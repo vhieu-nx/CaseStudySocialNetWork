@@ -1,4 +1,4 @@
-package kl.socialnetwork.models.bindingModels.user;
+package kl.socialnetwork.domain.models.bindingModels.user;
 
 import kl.socialnetwork.utils.constants.ValidationMessageConstants;
 import kl.socialnetwork.validations.annotations.Password;
