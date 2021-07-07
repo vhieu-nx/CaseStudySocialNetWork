@@ -5,6 +5,7 @@ import kl.socialnetwork.domain.models.bindingModels.user.UserRegisterBindingMode
 import kl.socialnetwork.domain.models.serviceModels.UserServiceModel;
 import kl.socialnetwork.domain.models.viewModels.user.UserAllViewModel;
 import kl.socialnetwork.domain.models.viewModels.user.UserCreateViewModel;
+import kl.socialnetwork.domain.models.viewModels.user.UserDetailsViewModel;
 import kl.socialnetwork.services.UserService;
 import kl.socialnetwork.utils.responseHandler.exceptions.BadRequestException;
 import kl.socialnetwork.utils.responseHandler.successResponse.SuccessResponse;
@@ -73,6 +74,13 @@ public class UserController {
                     return userAllViewModel;
                 })
                 .collect(Collectors.toList());
+    }
+
+    @GetMapping(value = "/details/{id}")
+    public ResponseEntity getDetails(@PathVariable String id) throws Exception {
+        UserDetailsViewModel user = this.userService.getById(id);
+
+        return new ResponseEntity<>(this.objectMapper.writeValueAsString(user), HttpStatus.OK);
     }
 
 }
