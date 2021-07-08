@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static kl.socialnetwork.utils.constants.ResponseMessageConstants.SERVER_ERROR_MESSAGE;
 
@@ -84,11 +85,31 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public List<MessageServiceModel> getAllMessages(String loggedInUsername, String chatUserId) {
-        return null;
+        User loggedInUser = userRepository
+                .findByUsername(loggedInUsername)
+                .filter(userValidation::isValid)
+                .orElseThrow(() -> new CustomException(SERVER_ERROR_MESSAGE));
+
+        User chatUser = userRepository
+                .findById(chatUserId)
+                .filter(userValidation::isValid)
+                .orElseThrow(() -> new CustomException(SERVER_ERROR_MESSAGE));
+
+        List<Message> allMessagesBetweenTwoUsers = this.messageRepository
+                .findAllMessagesBetweenTwoUsers(loggedInUser.getId(), chatUser.getId());
+
+        this.updateMessageStatus(loggedInUser.getId(), chatUserId);
+
+        return allMessagesBetweenTwoUsers
+                .stream().map(message -> modelMapper.map(message, MessageServiceModel.class))
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<MessageFriendsViewModel> getAllFriendMessages(String loggedInUsername) {
         return null;
+    }
+    private void updateMessageStatus(String loggedInUserId, String chatUserId) {
+        this.messageRepository.updateStatusFromReadMessages(loggedInUserId, chatUserId);
     }
 }
