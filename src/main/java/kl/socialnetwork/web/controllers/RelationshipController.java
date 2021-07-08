@@ -107,6 +107,10 @@ public class RelationshipController {
 
         return this.relationshipService.searchUsers(loggedInUserId, search);
     }
+    @GetMapping(value = "/findFriends/{id}", produces = "application/json")
+    public List<FriendsCandidatesViewModel> findAllNotFriends(@PathVariable String id) {
+        return this.relationshipService.findAllFriendCandidates(id);
+    }
 
 
 
