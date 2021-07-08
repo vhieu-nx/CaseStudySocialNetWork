@@ -7,6 +7,7 @@ import kl.socialnetwork.services.LoggerService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -36,6 +37,17 @@ public class LoggerController {
                 .map(this::parseDate)
                 .collect(Collectors.toList());
     }
+
+
+    @GetMapping(value = "/findByUserName/{username}")
+    public List<LoggerViewModel> getLogsByUsername(@PathVariable String username) {
+        return this.loggerService
+                .getLogsByUsername(username)
+                .stream()
+                .map(this::parseDate)
+                .collect(Collectors.toList());
+    }
+
 
     private LoggerViewModel parseDate(LoggerServiceModel x) {
         LoggerViewModel loggerViewModel = new LoggerViewModel();
