@@ -6,6 +6,7 @@ import kl.socialnetwork.domain.entities.User;
 import kl.socialnetwork.domain.entities.UserRole;
 import kl.socialnetwork.domain.models.bindingModels.post.PostCreateBindingModel;
 import kl.socialnetwork.domain.models.serviceModels.PostServiceModel;
+import kl.socialnetwork.repositories.LikeRepository;
 import kl.socialnetwork.repositories.PostRepository;
 import kl.socialnetwork.repositories.RoleRepository;
 import kl.socialnetwork.repositories.UserRepository;
@@ -31,15 +32,17 @@ import static kl.socialnetwork.utils.constants.ResponseMessageConstants.SERVER_E
 public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final LikeRepository likeRepository;
     private final RoleRepository roleRepository;
     private final ModelMapper modelMapper;
     private final PostValidationService postValidationService;
     private final UserValidationService userValidationService;
 
     @Autowired
-    public PostServiceImpl(PostRepository postRepository, UserRepository userRepository, RoleRepository roleRepository, ModelMapper modelMapper, PostValidationService postValidationService, UserValidationService userValidationService) {
+    public PostServiceImpl(PostRepository postRepository, UserRepository userRepository, LikeRepository likeRepository, RoleRepository roleRepository, ModelMapper modelMapper, PostValidationService postValidationService, UserValidationService userValidationService) {
         this.postRepository = postRepository;
         this.userRepository = userRepository;
+        this.likeRepository = likeRepository;
         this.roleRepository = roleRepository;
         this.modelMapper = modelMapper;
         this.postValidationService = postValidationService;
