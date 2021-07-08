@@ -1,0 +1,47 @@
+package kl.socialnetwork.web.controllers;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import kl.socialnetwork.domain.models.viewModels.picture.PictureAllViewModel;
+import kl.socialnetwork.services.PictureService;
+import kl.socialnetwork.utils.responseHandler.exceptions.CustomException;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static kl.socialnetwork.utils.constants.ResponseMessageConstants.SERVER_ERROR_MESSAGE;
+
+@RestController()
+@RequestMapping(value = "/pictures")
+public class PictureController {
+    private final PictureService pictureService;
+    private final ModelMapper modelMapper;
+    private final ObjectMapper objectMapper;
+    @Autowired
+    public PictureController(PictureService pictureService, ModelMapper modelMapper, ObjectMapper objectMapper) {
+        this.pictureService = pictureService;
+        this.modelMapper = modelMapper;
+        this.objectMapper = objectMapper;
+    }
+    @GetMapping(value = "/all/{id}")
+    public List<PictureAllViewModel> getAllPictures(@PathVariable(value = "id") String userId) {
+        try {
+            return this.pictureService
+                    .getAllPicturesByUserId(userId)
+                    .stream()
+                    .map(x -> this.modelMapper.map(x, PictureAllViewModel.class))
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new CustomException(SERVER_ERROR_MESSAGE);
+        }
+    }
+
+
+
+
+}
