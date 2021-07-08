@@ -2,12 +2,14 @@ package kl.socialnetwork.servicesImpl;
 
 import kl.socialnetwork.domain.entities.Picture;
 import kl.socialnetwork.domain.entities.User;
+import kl.socialnetwork.domain.entities.UserRole;
 import kl.socialnetwork.domain.models.serviceModels.PictureServiceModel;
 import kl.socialnetwork.repositories.PictureRepository;
 import kl.socialnetwork.repositories.RoleRepository;
 import kl.socialnetwork.repositories.UserRepository;
 import kl.socialnetwork.services.CloudinaryService;
 import kl.socialnetwork.services.PictureService;
+import kl.socialnetwork.utils.responseHandler.exceptions.CustomException;
 import kl.socialnetwork.validations.serviceValidation.services.CloudinaryValidationService;
 import kl.socialnetwork.validations.serviceValidation.services.PictureValidationService;
 import kl.socialnetwork.validations.serviceValidation.services.UserValidationService;
@@ -24,6 +26,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static kl.socialnetwork.utils.constants.ResponseMessageConstants.SERVER_ERROR_MESSAGE;
+import static kl.socialnetwork.utils.constants.ResponseMessageConstants.UNAUTHORIZED_SERVER_ERROR_MESSAGE;
 
 @Service
 @Transactional
@@ -86,6 +89,26 @@ public class PictureServiceImpl implements PictureService {
 
     @Override
     public boolean deletePicture(String loggedInUserId, String photoToRemoveId) throws Exception {
-        return false;
+        User loggedInUser = this.userRepository.findById(loggedInUserId).orElse(null);
+        Picture photoToRemove = this.pictureRepository.findById(photoToRemoveId).orElse(null);
+
+        if (!userValidation.isValid(loggedInUser) || !pictureValidation.isValid(photoToRemove)) {
+            throw new Exception(SERVER_ERROR_MESSAGE);
+        }
+
+
+        UserRole rootRole = this.roleRepository.findByAuthority("ROOT");
+        boolean hasRootAuthority = loggedInUser.getAuthorities().contains(rootRole);
+        boolean pictureOwnershipCheck = photoToRemove.getUser().getId().equals(loggedInUserId);
+
+        if (hasRootAuthority || pictureOwnershipCheck) {
+            this.pictureRepository.delete(photoToRemove);
+
+            String cloudinaryPublicId = photoToRemove.getCloudinaryPublicId();
+
+            return this.cloudinaryService.deleteImage(cloudinaryPublicId);
+        } else {
+            throw new CustomException(UNAUTHORIZED_SERVER_ERROR_MESSAGE);
+        }
     }
 }
