@@ -3,6 +3,7 @@ package kl.socialnetwork.servicesImpl;
 import kl.socialnetwork.domain.entities.Comment;
 import kl.socialnetwork.domain.entities.Post;
 import kl.socialnetwork.domain.entities.User;
+import kl.socialnetwork.domain.entities.UserRole;
 import kl.socialnetwork.domain.models.bindingModels.post.PostCreateBindingModel;
 import kl.socialnetwork.domain.models.serviceModels.PostServiceModel;
 import kl.socialnetwork.repositories.PostRepository;
@@ -12,6 +13,7 @@ import kl.socialnetwork.services.PostService;
 import kl.socialnetwork.validations.serviceValidation.services.PostValidationService;
 import kl.socialnetwork.validations.serviceValidation.services.UserValidationService;
 import org.modelmapper.ModelMapper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -97,9 +99,28 @@ public class PostServiceImpl implements PostService {
                 })
                 .collect(Collectors.toList());
     }
-
+    @Async
     @Override
     public CompletableFuture<Boolean> deletePost(String loggedInUserId, String postToRemoveId) throws Exception {
-        return null;
+        User loggedInUser = this.userRepository.findById(loggedInUserId).orElse(null);
+        Post postToRemove = this.postRepository.findById(postToRemoveId).orElse(null);
+        if (!userValidationService.isValid(loggedInUser) || !postValidationService.isValid(postToRemove)) {
+            throw new Exception(SERVER_ERROR_MESSAGE);
+        }
+        UserRole rootRole = this.roleRepository.findByAuthority("ROOT");
+        boolean hasRootAuthority = loggedInUser.getAuthorities().contains(rootRole);
+        boolean isPostCreator = postToRemove.getLoggedInUser().getId().equals(loggedInUserId);
+        boolean isTimeLineUser = postToRemove.getTimelineUser().getId().equals(loggedInUserId);
+
+        if (hasRootAuthority || isPostCreator || isTimeLineUser) {
+            try {
+                this.postRepository.delete(postToRemove);
+                return CompletableFuture.completedFuture(true);
+            } catch (Exception e) {
+                throw new Exception(SERVER_ERROR_MESSAGE);
+            }
+        } else {
+            throw new Exception(SERVER_ERROR_MESSAGE);
+        }
     }
 }
