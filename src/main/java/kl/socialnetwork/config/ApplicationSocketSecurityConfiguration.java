@@ -1,10 +1,10 @@
 package kl.socialnetwork.config;
 
-import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.messaging.MessageSecurityMetadataSourceRegistry;
 import org.springframework.security.config.annotation.web.socket.AbstractSecurityWebSocketMessageBrokerConfigurer;
 
-@Configurable
+@Configuration
 public class ApplicationSocketSecurityConfiguration extends AbstractSecurityWebSocketMessageBrokerConfigurer {
     @Override
     protected void configureInbound(MessageSecurityMetadataSourceRegistry messages) {
