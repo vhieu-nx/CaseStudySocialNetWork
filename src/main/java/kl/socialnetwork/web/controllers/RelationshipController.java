@@ -2,6 +2,7 @@ package kl.socialnetwork.web.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kl.socialnetwork.domain.models.serviceModels.RelationshipServiceModel;
 import kl.socialnetwork.domain.models.viewModels.relationship.FriendsAllViewModel;
+import kl.socialnetwork.domain.models.viewModels.relationship.FriendsCandidatesViewModel;
 import kl.socialnetwork.services.RelationshipService;
 import kl.socialnetwork.utils.responseHandler.exceptions.CustomException;
 import kl.socialnetwork.utils.responseHandler.successResponse.SuccessResponse;
@@ -98,6 +99,13 @@ public class RelationshipController {
         }
 
         throw new CustomException(SERVER_ERROR_MESSAGE);
+    }
+    @PostMapping(value = "/search", produces = "application/json")
+    public List<FriendsCandidatesViewModel> searchUsers(@RequestBody Map<String, Object> body) {
+        String loggedInUserId = (String) body.get("loggedInUserId");
+        String search = (String) body.get("search");
+
+        return this.relationshipService.searchUsers(loggedInUserId, search);
     }
 
 
