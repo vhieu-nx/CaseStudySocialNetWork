@@ -107,8 +107,46 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public List<MessageFriendsViewModel> getAllFriendMessages(String loggedInUsername) {
-        return null;
+        User loggedInUser = userRepository
+                .findByUsername(loggedInUsername)
+                .filter(userValidation::isValid)
+                .orElseThrow(() -> new CustomException(SERVER_ERROR_MESSAGE));
+
+        List<Message> allUnreadMessages = this.messageRepository.getAllUnreadMessages(loggedInUser.getId());
+
+        List<MessageServiceModel> messageServiceModels = allUnreadMessages.stream()
+                .map(message -> modelMapper.map(message, MessageServiceModel.class))
+                .collect(Collectors.toList());
+
+        List<MessageServiceModel> allFriendsMessages =
+                messageServiceModels.stream()
+                        .filter(message -> message.getRelationship().getStatus() == 1)
+                        .collect(Collectors.toList());
+
+        return mapToMessageFriendsViewModel(loggedInUser.getId(), allFriendsMessages);
     }
+
+    private List<MessageFriendsViewModel> mapToMessageFriendsViewModel(String loggedInUserId, List<MessageServiceModel> allUnreadMessages) {
+        List<Object[]> countOfUnreadMessagesByFromUser = this.messageRepository.getCountOfUnreadMessagesByFromUser(loggedInUserId);
+
+        return allUnreadMessages.stream()
+                .map(messageServiceModel -> {
+                    MessageFriendsViewModel unreadViewModel = modelMapper.map(messageServiceModel, MessageFriendsViewModel.class);
+                    Object[] objects = countOfUnreadMessagesByFromUser.stream()
+                            .filter(element -> element[0].equals(unreadViewModel.getFromUserId()))
+                            .findFirst().orElse(null);
+
+                    if(objects != null){
+                        unreadViewModel.setCount(Integer.valueOf(objects[1].toString()));
+                    }else{
+                        unreadViewModel.setCount(0);
+                    }
+
+                    return unreadViewModel;
+                })
+                .collect(Collectors.toList());
+    }
+
     private void updateMessageStatus(String loggedInUserId, String chatUserId) {
         this.messageRepository.updateStatusFromReadMessages(loggedInUserId, chatUserId);
     }
