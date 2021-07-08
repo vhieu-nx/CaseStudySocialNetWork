@@ -6,6 +6,8 @@ import org.springframework.security.config.annotation.web.socket.AbstractSecurit
 
 @Configuration
 public class ApplicationSocketSecurityConfiguration extends AbstractSecurityWebSocketMessageBrokerConfigurer {
+
+
     @Override
     protected void configureInbound(MessageSecurityMetadataSourceRegistry messages) {
         messages
@@ -15,9 +17,9 @@ public class ApplicationSocketSecurityConfiguration extends AbstractSecurityWebS
 //                .simpTypeMatchers(SUBSCRIBE, MESSAGE).denyAll()
                 .anyMessage().denyAll();
     }
+
     @Override
     protected boolean sameOriginDisabled() {
         return true;
     }
-
 }

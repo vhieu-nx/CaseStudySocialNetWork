@@ -12,4 +12,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/message")
 public class MessageController {
 
+    private final SimpMessagingTemplate template;
+    private final MessageService messageService;
+    private final ModelMapper modelMapper;
+    private final ObjectMapper objectMapper;
+    @Autowired
+    public MessageController(SimpMessagingTemplate template, MessageService messageService, ModelMapper modelMapper, ObjectMapper objectMapper) {
+        this.template = template;
+        this.messageService = messageService;
+        this.modelMapper = modelMapper;
+        this.objectMapper = objectMapper;
+    }
 }

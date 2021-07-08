@@ -1,12 +1,12 @@
 package kl.socialnetwork.config;
-
 import io.jsonwebtoken.Jwts;
 import kl.socialnetwork.domain.entities.User;
 import kl.socialnetwork.services.UserService;
 import kl.socialnetwork.utils.responseHandler.exceptions.CustomException;
-import kl.socialnetwork.validations.serviceValidation.services.UserValidationService;
 import kl.socialnetwork.web.websocket.JWTAuthenticationToken;
-import org.springframework.beans.factory.annotation.Configurable;
+import kl.socialnetwork.validations.serviceValidation.services.UserValidationService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.messaging.Message;
@@ -26,18 +26,22 @@ import java.util.Optional;
 
 import static kl.socialnetwork.utils.constants.ResponseMessageConstants.UNAUTHORIZED_SERVER_ERROR_MESSAGE;
 
-@Configurable
+@Configuration
 @EnableWebSocketMessageBroker
 @Order(Ordered.HIGHEST_PRECEDENCE + 99)
 public class ApplicationWebSocketConfiguration implements WebSocketMessageBrokerConfigurer {
     private final UserService userService;
     private final UserValidationService userValidation;
 
+    @Autowired
     public ApplicationWebSocketConfiguration(UserService userService, UserValidationService userValidation) {
         this.userService = userService;
         this.userValidation = userValidation;
     }
 
+    /**
+     * Register Stomp endpoints: the url to open the WebSocket connection.
+     */
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         // Register the "/socket" endpoint, enabling the SockJS protocol.
@@ -106,5 +110,4 @@ public class ApplicationWebSocketConfiguration implements WebSocketMessageBroker
 
         return null;
     }
-
 }
