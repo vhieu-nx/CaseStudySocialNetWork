@@ -49,6 +49,12 @@ public class MessageController {
                 .map(messageServiceModel -> modelMapper.map(messageServiceModel, MessageAllViewModel.class))
                 .collect(Collectors.toList());
     }
+    @GetMapping(value = "/friend")
+    public List<MessageFriendsViewModel> getAllFriendMessages(Authentication principal) {
+        String loggedInUsername = principal.getName();
+
+        return this.messageService.getAllFriendMessages(loggedInUsername);
+    }
 
 
 
