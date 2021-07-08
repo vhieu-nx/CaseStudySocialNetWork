@@ -15,8 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static kl.socialnetwork.utils.constants.ResponseMessageConstants.SERVER_ERROR_MESSAGE;
-import static kl.socialnetwork.utils.constants.ResponseMessageConstants.SUCCESSFUL_FRIEND_REQUEST_SUBMISSION_MESSAGE;
+import static kl.socialnetwork.utils.constants.ResponseMessageConstants.*;
 
 @RestController
 @RequestMapping(value = "/relationship")
@@ -54,6 +53,20 @@ public class RelationshipController {
         if (result) {
             SuccessResponse successResponse = new SuccessResponse(LocalDateTime.now(), SUCCESSFUL_FRIEND_REQUEST_SUBMISSION_MESSAGE, "", true);
 
+            return new ResponseEntity<>(this.objectMapper.writeValueAsString(successResponse), HttpStatus.OK);
+        }
+
+        throw new CustomException(SERVER_ERROR_MESSAGE);
+    }
+    @PostMapping(value = "/removeFriend")
+    public ResponseEntity removeFriend(@RequestBody Map<String, Object> body) throws Exception {
+        String loggedInUserId = (String) body.get("loggedInUserId");
+        String friendToRemoveId = (String) body.get("friendToRemoveId");
+
+        boolean result = this.relationshipService.removeFriend(loggedInUserId, friendToRemoveId);
+
+        if (result) {
+            SuccessResponse successResponse = new SuccessResponse(LocalDateTime.now(), SUCCESSFUL_FRIEND_REMOVE_MESSAGE, "", true);
             return new ResponseEntity<>(this.objectMapper.writeValueAsString(successResponse), HttpStatus.OK);
         }
 
