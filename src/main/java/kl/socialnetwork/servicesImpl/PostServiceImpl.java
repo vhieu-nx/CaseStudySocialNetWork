@@ -13,6 +13,7 @@ import kl.socialnetwork.services.PostService;
 import kl.socialnetwork.validations.serviceValidation.services.PostValidationService;
 import kl.socialnetwork.validations.serviceValidation.services.UserValidationService;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +36,7 @@ public class PostServiceImpl implements PostService {
     private final PostValidationService postValidationService;
     private final UserValidationService userValidationService;
 
+    @Autowired
     public PostServiceImpl(PostRepository postRepository, UserRepository userRepository, RoleRepository roleRepository, ModelMapper modelMapper, PostValidationService postValidationService, UserValidationService userValidationService) {
         this.postRepository = postRepository;
         this.userRepository = userRepository;
@@ -99,6 +101,7 @@ public class PostServiceImpl implements PostService {
                 })
                 .collect(Collectors.toList());
     }
+
     @Async
     @Override
     public CompletableFuture<Boolean> deletePost(String loggedInUserId, String postToRemoveId) throws Exception {

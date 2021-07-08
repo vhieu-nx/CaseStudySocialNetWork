@@ -16,6 +16,7 @@ import kl.socialnetwork.validations.serviceValidation.services.CommentValidation
 import kl.socialnetwork.validations.serviceValidation.services.PostValidationService;
 import kl.socialnetwork.validations.serviceValidation.services.UserValidationService;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -36,7 +37,7 @@ public class CommentServiceImpl implements CommentService {
     private final CommentValidationService commentValidation;
     private final UserValidationService userValidation;
     private final PostValidationService postValidation;
-
+    @Autowired
     public CommentServiceImpl(CommentRepository commentRepository, UserRepository userRepository, PostRepository postRepository, RoleRepository roleRepository, ModelMapper modelMapper, CommentValidationService commentValidation, UserValidationService userValidation, PostValidationService postValidation) {
         this.commentRepository = commentRepository;
         this.userRepository = userRepository;
