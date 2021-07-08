@@ -56,6 +56,20 @@ public class MessageController {
         return this.messageService.getAllFriendMessages(loggedInUsername);
     }
 
+    @MessageMapping("/message")
+    public void createPrivateChatMessages(@RequestBody @Valid MessageCreateBindingModel messageCreateBindingModel, Principal principal, SimpMessageHeaderAccessor headerAccessor) throws Exception {
+        MessageServiceModel message = this.messageService.createMessage(messageCreateBindingModel, principal.getName());
+        MessageAllViewModel messageAllViewModel = this.modelMapper.map(message, MessageAllViewModel.class);
+
+        if (messageAllViewModel != null) {
+            String response = this.objectMapper.writeValueAsString(messageAllViewModel);
+            template.convertAndSend("/user/" + message.getToUser().getUsername() + "/queue/position-update", response);
+            template.convertAndSend("/user/" + message.getFromUser().getUsername() + "/queue/position-update", response);
+            return;
+        }
+        throw new CustomException(SERVER_ERROR_MESSAGE);
+    }
+
 
 
 
