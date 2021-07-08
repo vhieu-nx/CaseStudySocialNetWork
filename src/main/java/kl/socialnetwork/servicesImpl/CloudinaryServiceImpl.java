@@ -55,10 +55,8 @@ public class CloudinaryServiceImpl implements CloudinaryService {
         }
 
         Api.ApiResponse apiResponse = this.cloudinary.api().deleteResources(Collections.singletonList(cloudinaryPublicId), new HashMap());
-
         JSONObject deleted = (JSONObject) apiResponse.get("deleted");
         String deletingResult = deleted.get(cloudinaryPublicId).toString();
-
         return deletingResult.equals("deleted");
     }
 }
