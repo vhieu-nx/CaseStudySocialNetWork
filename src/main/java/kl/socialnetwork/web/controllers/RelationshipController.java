@@ -7,6 +7,7 @@ import kl.socialnetwork.services.RelationshipService;
 import kl.socialnetwork.utils.responseHandler.exceptions.CustomException;
 import kl.socialnetwork.utils.responseHandler.successResponse.SuccessResponse;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,7 @@ public class RelationshipController {
     private final RelationshipService relationshipService;
     private final ModelMapper modelMapper;
     private final ObjectMapper objectMapper;
-
+    @Autowired
     public RelationshipController(RelationshipService relationshipService, ModelMapper modelMapper, ObjectMapper objectMapper) {
         this.relationshipService = relationshipService;
         this.modelMapper = modelMapper;
