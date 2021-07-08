@@ -3,6 +3,7 @@ package kl.socialnetwork.servicesImpl;
 import kl.socialnetwork.domain.entities.Comment;
 import kl.socialnetwork.domain.entities.Post;
 import kl.socialnetwork.domain.entities.User;
+import kl.socialnetwork.domain.entities.UserRole;
 import kl.socialnetwork.domain.models.bindingModels.comment.CommentCreateBindingModel;
 import kl.socialnetwork.domain.models.serviceModels.CommentServiceModel;
 import kl.socialnetwork.repositories.CommentRepository;
@@ -10,10 +11,12 @@ import kl.socialnetwork.repositories.PostRepository;
 import kl.socialnetwork.repositories.RoleRepository;
 import kl.socialnetwork.repositories.UserRepository;
 import kl.socialnetwork.services.CommentService;
+import kl.socialnetwork.utils.responseHandler.exceptions.CustomException;
 import kl.socialnetwork.validations.serviceValidation.services.CommentValidationService;
 import kl.socialnetwork.validations.serviceValidation.services.PostValidationService;
 import kl.socialnetwork.validations.serviceValidation.services.UserValidationService;
 import org.modelmapper.ModelMapper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -79,9 +82,30 @@ public class CommentServiceImpl implements CommentService {
 
         return this.commentRepository.save(comment) != null;
     }
-
+    @Async
     @Override
     public CompletableFuture<Boolean> deleteComment(String loggedInUserId, String commentToRemoveId) throws Exception {
-        return null;
+        User loggedInUser = this.userRepository.findById(loggedInUserId).orElse(null);
+        Comment commentToRemove = this.commentRepository.findById(commentToRemoveId).orElse(null);
+
+        if (!userValidation.isValid(loggedInUser) || !commentValidation.isValid(commentToRemove)) {
+            throw new Exception(SERVER_ERROR_MESSAGE);
+        }
+
+        UserRole rootRole = this.roleRepository.findByAuthority("ROOT");
+        boolean hasRootAuthority = loggedInUser.getAuthorities().contains(rootRole);
+        boolean isCommentCreator = commentToRemove.getCreator().getId().equals(loggedInUserId);
+        boolean isTimeLineUser = commentToRemove.getTimelineUser().getId().equals(loggedInUserId);
+
+        if (hasRootAuthority || isCommentCreator || isTimeLineUser) {
+            try {
+                this.commentRepository.delete(commentToRemove);
+                return CompletableFuture.completedFuture(true);
+            } catch (Exception e) {
+                throw new CustomException(SERVER_ERROR_MESSAGE);
+            }
+        } else {
+            throw new Exception(SERVER_ERROR_MESSAGE);
+        }
     }
 }
