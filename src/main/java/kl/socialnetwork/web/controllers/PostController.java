@@ -17,10 +17,11 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-import static kl.socialnetwork.utils.constants.ResponseMessageConstants.SERVER_ERROR_MESSAGE;
-import static kl.socialnetwork.utils.constants.ResponseMessageConstants.SUCCESSFUL_CREATE_POST_MESSAGE;
+import static kl.socialnetwork.utils.constants.ResponseMessageConstants.*;
 
 @RestController()
 @RequestMapping(value = "/post")
@@ -59,6 +60,20 @@ public class PostController {
         } catch (Exception e) {
             throw new CustomException(SERVER_ERROR_MESSAGE);
         }
+    }
+    @PostMapping(value = "/remove")
+    public ResponseEntity removePost(@RequestBody Map<String, Object> body) throws Exception {
+        String loggedInUserId = (String) body.get("loggedInUserId");
+        String postToRemoveId = (String) body.get("postToRemoveId");
+
+        CompletableFuture<Boolean> result = this.postService.deletePost(loggedInUserId, postToRemoveId);
+
+        if (result.get()) {
+            SuccessResponse successResponse = new SuccessResponse(LocalDateTime.now(), SUCCESSFUL_POST_DELETE_MESSAGE, "", true);
+            return new ResponseEntity<>(this.objectMapper.writeValueAsString(successResponse), HttpStatus.OK);
+        }
+
+        throw new CustomException(SERVER_ERROR_MESSAGE);
     }
 
 }
