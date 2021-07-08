@@ -2,6 +2,8 @@ package kl.socialnetwork.web.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kl.socialnetwork.domain.models.bindingModels.post.PostCreateBindingModel;
+import kl.socialnetwork.domain.models.serviceModels.PostServiceModel;
+import kl.socialnetwork.domain.models.viewModels.post.PostAllViewModel;
 import kl.socialnetwork.services.PostService;
 import kl.socialnetwork.utils.responseHandler.exceptions.CustomException;
 import kl.socialnetwork.utils.responseHandler.successResponse.SuccessResponse;
@@ -10,13 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static kl.socialnetwork.utils.constants.ResponseMessageConstants.SERVER_ERROR_MESSAGE;
 import static kl.socialnetwork.utils.constants.ResponseMessageConstants.SUCCESSFUL_CREATE_POST_MESSAGE;
@@ -43,6 +44,21 @@ public class PostController {
         }
 
         throw new CustomException(SERVER_ERROR_MESSAGE);
+    }
+    @GetMapping(value = "/all/{id}")
+    public List<PostAllViewModel> getAllPosts(@PathVariable(value = "id") String timelineUserId) {
+        try {
+            List<PostServiceModel> postServiceAllPosts = this.postService.getAllPosts(timelineUserId);
+
+            return postServiceAllPosts.stream().map(postServiceModel -> {
+                PostAllViewModel postAllViewModel = this.modelMapper.map(postServiceModel, PostAllViewModel.class);
+                postAllViewModel.setLikeCount(postServiceModel.getLike().size());
+                postAllViewModel.setPostId(postServiceModel.getId());
+                return postAllViewModel;
+            }).collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new CustomException(SERVER_ERROR_MESSAGE);
+        }
     }
 
 }
