@@ -72,6 +72,19 @@ public class RelationshipController {
 
         throw new CustomException(SERVER_ERROR_MESSAGE);
     }
+    @PostMapping(value = "/acceptFriend")
+    public ResponseEntity acceptFriend(@RequestBody Map<String, Object> body) throws Exception {
+        String loggedInUserId = (String) body.get("loggedInUserId");
+        String friendToAcceptId = (String) body.get("friendToAcceptId");
+
+        boolean result = this.relationshipService.acceptFriend(loggedInUserId, friendToAcceptId);
+
+        if (result) {
+            SuccessResponse successResponse = new SuccessResponse(LocalDateTime.now(), SUCCESSFUL_ADDED_FRIEND_MESSAGE, "", true);
+            return new ResponseEntity<>(this.objectMapper.writeValueAsString(successResponse), HttpStatus.OK);
+        }
+        throw new CustomException(SERVER_ERROR_MESSAGE);
+    }
 
 
 }
