@@ -85,6 +85,21 @@ public class RelationshipController {
         }
         throw new CustomException(SERVER_ERROR_MESSAGE);
     }
+    @PostMapping(value = "/cancelRequest")
+    public ResponseEntity cancelFriendshipRequest(@RequestBody Map<String, Object> body) throws Exception {
+        String loggedInUserId = (String) body.get("loggedInUserId");
+        String friendToRejectId = (String) body.get("friendToRejectId");
+
+        boolean result = this.relationshipService.cancelFriendshipRequest(loggedInUserId, friendToRejectId);
+
+        if (result) {
+            SuccessResponse successResponse = new SuccessResponse(LocalDateTime.now(), SUCCESSFUL_REJECT_FRIEND_REQUEST_MESSAGE, "", true);
+            return new ResponseEntity<>(this.objectMapper.writeValueAsString(successResponse), HttpStatus.OK);
+        }
+
+        throw new CustomException(SERVER_ERROR_MESSAGE);
+    }
+
 
 
 }
