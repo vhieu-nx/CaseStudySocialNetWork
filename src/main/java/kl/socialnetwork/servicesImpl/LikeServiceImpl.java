@@ -56,6 +56,12 @@ public class LikeServiceImpl implements LikeService {
 
     @Override
     public int getAllLikesForPost(String postId) throws Exception {
-        return 0;
+        Post post = this.postRepository.findById(postId).orElse(null);
+
+        if (!postValidation.isValid(post)) {
+            throw new Exception(SERVER_ERROR_MESSAGE);
+        }
+
+        return this.likeRepository.findAllByPost(post).size();
     }
 }
