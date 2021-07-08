@@ -76,8 +76,4 @@ public class PictureController {
         throw new CustomException(ResponseMessageConstants.SERVER_ERROR_MESSAGE);
     }
 
-
-
-
-
 }
