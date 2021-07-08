@@ -3,18 +3,22 @@ package kl.socialnetwork.web.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kl.socialnetwork.domain.models.viewModels.picture.PictureAllViewModel;
 import kl.socialnetwork.services.PictureService;
+import kl.socialnetwork.utils.constants.ResponseMessageConstants;
 import kl.socialnetwork.utils.responseHandler.exceptions.CustomException;
+import kl.socialnetwork.utils.responseHandler.successResponse.SuccessResponse;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static kl.socialnetwork.utils.constants.ResponseMessageConstants.SERVER_ERROR_MESSAGE;
+import static kl.socialnetwork.utils.constants.ResponseMessageConstants.SUCCESSFUL_PICTURE_UPLOAD_MESSAGE;
 
 @RestController()
 @RequestMapping(value = "/pictures")
@@ -40,6 +44,23 @@ public class PictureController {
             throw new CustomException(SERVER_ERROR_MESSAGE);
         }
     }
+
+    @PostMapping(value = "/add")
+    public ResponseEntity<Object> addPicture(
+            @RequestParam(name = "loggedInUserId") String loggedInUserId,
+            @RequestParam(name = "file") MultipartFile file
+    ) throws Exception {
+
+        boolean result = this.pictureService.addPicture(loggedInUserId, file);
+
+        if (result) {
+            SuccessResponse successResponse = new SuccessResponse(LocalDateTime.now(), SUCCESSFUL_PICTURE_UPLOAD_MESSAGE, "", true);
+            return new ResponseEntity<>(this.objectMapper.writeValueAsString(successResponse), HttpStatus.OK);
+        }
+
+        throw new CustomException(ResponseMessageConstants.SERVER_ERROR_MESSAGE);
+    }
+
 
 
 
