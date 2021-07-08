@@ -18,8 +18,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static kl.socialnetwork.utils.constants.ResponseMessageConstants.SERVER_ERROR_MESSAGE;
-import static kl.socialnetwork.utils.constants.ResponseMessageConstants.SUCCESSFUL_LOGS_DELETING_MESSAGE;
+import static kl.socialnetwork.utils.constants.ResponseMessageConstants.*;
 
 @RestController
 @RequestMapping(value = "/logs")
@@ -60,6 +59,17 @@ public class LoggerController {
 
         if (result) {
             SuccessResponse successResponse = new SuccessResponse(LocalDateTime.now(), SUCCESSFUL_LOGS_DELETING_MESSAGE, "", true);
+            return new ResponseEntity<>(this.objectMapper.writeValueAsString(successResponse), HttpStatus.OK);
+        }
+        throw new CustomException(SERVER_ERROR_MESSAGE);
+    }
+
+    @DeleteMapping(value = "/clearByName/{username}")
+    public ResponseEntity deleteLogsByName(@PathVariable String username) throws JsonProcessingException {
+        boolean result = this.loggerService.deleteByName(username);
+
+        if (result) {
+            SuccessResponse successResponse = new SuccessResponse(LocalDateTime.now(), SUCCESSFUL_USER_LOGS_DELETING_MESSAGE, "", true);
             return new ResponseEntity<>(this.objectMapper.writeValueAsString(successResponse), HttpStatus.OK);
         }
         throw new CustomException(SERVER_ERROR_MESSAGE);
