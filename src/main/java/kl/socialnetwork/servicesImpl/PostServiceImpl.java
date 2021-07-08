@@ -1,5 +1,6 @@
 package kl.socialnetwork.servicesImpl;
 
+import kl.socialnetwork.domain.entities.Comment;
 import kl.socialnetwork.domain.entities.Post;
 import kl.socialnetwork.domain.entities.User;
 import kl.socialnetwork.domain.models.bindingModels.post.PostCreateBindingModel;
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import static kl.socialnetwork.utils.constants.ResponseMessageConstants.SERVER_ERROR_MESSAGE;
 
@@ -74,7 +76,26 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<PostServiceModel> getAllPosts(String timelineUserId) {
-        return null;
+        List<Post> postList = this.postRepository.findAllByTimelineUserIdOrderByTimeDesc(timelineUserId);
+        return postList
+                .stream()
+                .map(post -> this.modelMapper
+                        .map(post, PostServiceModel.class))
+                .peek(postServiceModel -> {
+                    List<Comment> commentList = postServiceModel.getCommentList()
+                            .stream()
+                            .sorted((comment1, comment2) -> {
+                                if (comment1.getTime().isAfter(comment2.getTime())) {
+                                    return 1;
+                                } else if (comment1.getTime().isBefore(comment2.getTime())) {
+                                    return -1;
+                                }
+                                return 0;
+                            }).collect(Collectors.toList());
+
+                    postServiceModel.setCommentList(commentList);
+                })
+                .collect(Collectors.toList());
     }
 
     @Override
