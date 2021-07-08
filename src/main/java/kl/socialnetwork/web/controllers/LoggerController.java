@@ -1,19 +1,25 @@
 package kl.socialnetwork.web.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kl.socialnetwork.domain.models.serviceModels.LoggerServiceModel;
 import kl.socialnetwork.domain.models.viewModels.logger.LoggerViewModel;
 import kl.socialnetwork.services.LoggerService;
+import kl.socialnetwork.utils.responseHandler.exceptions.CustomException;
+import kl.socialnetwork.utils.responseHandler.successResponse.SuccessResponse;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static kl.socialnetwork.utils.constants.ResponseMessageConstants.SERVER_ERROR_MESSAGE;
+import static kl.socialnetwork.utils.constants.ResponseMessageConstants.SUCCESSFUL_LOGS_DELETING_MESSAGE;
 
 @RestController
 @RequestMapping(value = "/logs")
@@ -46,6 +52,17 @@ public class LoggerController {
                 .stream()
                 .map(this::parseDate)
                 .collect(Collectors.toList());
+    }
+
+    @DeleteMapping(value = "/clear")
+    public ResponseEntity deleteLogs() throws JsonProcessingException {
+        boolean result = this.loggerService.deleteAll();
+
+        if (result) {
+            SuccessResponse successResponse = new SuccessResponse(LocalDateTime.now(), SUCCESSFUL_LOGS_DELETING_MESSAGE, "", true);
+            return new ResponseEntity<>(this.objectMapper.writeValueAsString(successResponse), HttpStatus.OK);
+        }
+        throw new CustomException(SERVER_ERROR_MESSAGE);
     }
 
 
