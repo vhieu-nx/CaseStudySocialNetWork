@@ -3,11 +3,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import kl.socialnetwork.domain.models.serviceModels.RelationshipServiceModel;
 import kl.socialnetwork.domain.models.viewModels.relationship.FriendsAllViewModel;
 import kl.socialnetwork.services.RelationshipService;
+import kl.socialnetwork.utils.responseHandler.exceptions.CustomException;
+import kl.socialnetwork.utils.responseHandler.successResponse.SuccessResponse;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import static kl.socialnetwork.utils.constants.ResponseMessageConstants.SERVER_ERROR_MESSAGE;
+import static kl.socialnetwork.utils.constants.ResponseMessageConstants.SUCCESSFUL_FRIEND_REQUEST_SUBMISSION_MESSAGE;
 
 @RestController
 @RequestMapping(value = "/relationship")
@@ -35,5 +44,21 @@ public class RelationshipController {
 
         return friendsAllViewModels;
     }
+    @PostMapping(value = "/addFriend")
+    public ResponseEntity addFriend(@RequestBody Map<String, Object> body) throws Exception {
+        String loggedInUserId = (String) body.get("loggedInUserId");
+        String friendCandidateId = (String) body.get("friendCandidateId");
+
+        boolean result = this.relationshipService.createRequestForAddingFriend(loggedInUserId, friendCandidateId);
+
+        if (result) {
+            SuccessResponse successResponse = new SuccessResponse(LocalDateTime.now(), SUCCESSFUL_FRIEND_REQUEST_SUBMISSION_MESSAGE, "", true);
+
+            return new ResponseEntity<>(this.objectMapper.writeValueAsString(successResponse), HttpStatus.OK);
+        }
+
+        throw new CustomException(SERVER_ERROR_MESSAGE);
+    }
+
 
 }
