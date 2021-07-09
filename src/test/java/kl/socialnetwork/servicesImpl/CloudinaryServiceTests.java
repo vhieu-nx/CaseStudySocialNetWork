@@ -33,7 +33,7 @@ public class CloudinaryServiceTests {
 
         Path path = Paths.get(TEST_IMAGE_FILE_PATH);
         String name = "file.png";
-        String originalFileName = "softuniLogo.PNG";
+        String originalFileName = "favi.png";
         String contentType = "image/png";
         byte[] content = null;
         try {
