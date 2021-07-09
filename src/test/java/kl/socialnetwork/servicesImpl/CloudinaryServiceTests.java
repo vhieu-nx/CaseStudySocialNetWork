@@ -26,9 +26,10 @@ public class CloudinaryServiceTests {
 
     @Autowired
     private CloudinaryService cloudinaryService;
+
     @Test
     public void uploadImage_whenMultipartFileAndUuidAreValid_uploadImage() throws Exception {
-        String TEST_IMAGE_FILE_PATH = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\img\\softuniLogo.PNG";
+        String TEST_IMAGE_FILE_PATH = System.getProperty("user.dir") + "\\src\\main\\resources\\static\\img\\favi.png";
 
         Path path = Paths.get(TEST_IMAGE_FILE_PATH);
         String name = "file.png";
