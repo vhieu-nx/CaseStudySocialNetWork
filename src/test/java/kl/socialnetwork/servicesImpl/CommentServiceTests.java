@@ -308,6 +308,34 @@ public class CommentServiceTests {
         // Assert
         assertNull(result.get());
     }
+    @Test()
+    public void deleteComment_whenUserIsNotAuthorized_throwException() throws Exception {
+        // Arrange
+        List<User> users = UsersUtils.getUsers(2);
+        Post post = PostsUtils.createPost(users.get(1), users.get(1));
+        Comment comment = CommentsUtils.createComment(users.get(1), users.get(1), post);
+
+        when(mockUserRepository.findById(any()))
+                .thenReturn(java.util.Optional.of(users.get(0)));
+
+        when(mockUserValidationService.isValid(any(User.class)))
+                .thenReturn(true);
+
+        when(mockCommentRepository.findById(any()))
+                .thenReturn(java.util.Optional.of(comment));
+
+        when(mockCommentValidationService.isValid(any(Comment.class)))
+                .thenReturn(true);
+
+        thrown.expect(Exception.class);
+        thrown.expectMessage(SERVER_ERROR_MESSAGE);
+
+        // Act
+        CompletableFuture<Boolean> result = commentService.deleteComment("5", "1");
+
+        // Assert
+        assertNull(result.get());
+    }
 
 
 
