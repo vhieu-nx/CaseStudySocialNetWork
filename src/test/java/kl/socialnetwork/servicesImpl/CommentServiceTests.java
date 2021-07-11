@@ -222,5 +222,34 @@ public class CommentServiceTests {
         assertTrue(result.get());
     }
 
+    @Test()
+    public void deleteComment_whenUserIsNotValid_throwException() throws Exception {
+        // Arrange
+        User user = UsersUtils.createUser();
+        Post post = PostsUtils.createPost(user, user);
+        Comment comment = CommentsUtils.createComment(user, user, post);
+
+        when(mockUserRepository.findById(any()))
+                .thenReturn(java.util.Optional.of(user));
+
+        when(mockUserValidationService.isValid(any(User.class)))
+                .thenReturn(false);
+
+        when(mockCommentValidationService.isValid(any(Comment.class)))
+                .thenReturn(true);
+
+        when(mockCommentRepository.findById(any()))
+                .thenReturn(java.util.Optional.of(comment));
+
+        thrown.expect(Exception.class);
+        thrown.expectMessage(SERVER_ERROR_MESSAGE);
+
+        // Act
+        CompletableFuture<Boolean> result = commentService.deleteComment("1", "1");
+
+        // Assert
+        assertTrue(result.get());
+    }
+
 
 }
