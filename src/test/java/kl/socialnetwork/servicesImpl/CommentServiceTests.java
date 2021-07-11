@@ -90,6 +90,32 @@ public class CommentServiceTests {
         verify(mockCommentRepository).save(any());
         verifyNoMoreInteractions(mockCommentRepository);
     }
+    @Test(expected = Exception.class)
+    public void createComment_whenCommentCreateBindingModelIsNotValid_throwException() throws Exception {
+        // Arrange
+        CommentCreateBindingModel commentCreateBindingModel = CommentsUtils.getCommentCreateBindingModel(1).get(0);
+
+        when(mockCommentValidationService.isValid(any(CommentCreateBindingModel.class)))
+                .thenReturn(false);
+
+        when(mockPostValidationService.isValid(any(Post.class)))
+                .thenReturn(true);
+
+        when(mockUserValidationService.isValid(any(User.class))).thenReturn(true);
+
+        when(mockUserRepository.findById(any()))
+                .thenReturn(java.util.Optional.of(new User()));
+
+        when(mockPostRepository.findById(any()))
+                .thenReturn(java.util.Optional.of(new Post()));
+
+        // Act
+        commentService.createComment(commentCreateBindingModel);
+
+        // Assert
+        verify(mockCommentRepository).save(any());
+        verifyNoMoreInteractions(mockCommentRepository);
+    }
 
 
 }
