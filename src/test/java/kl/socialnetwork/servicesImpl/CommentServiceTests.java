@@ -10,6 +10,8 @@ import kl.socialnetwork.repositories.UserRepository;
 import kl.socialnetwork.services.CommentService;
 import kl.socialnetwork.testUtils.CommentsUtils;
 
+import kl.socialnetwork.testUtils.PostsUtils;
+import kl.socialnetwork.testUtils.UsersUtils;
 import kl.socialnetwork.validations.serviceValidation.services.CommentValidationService;
 import kl.socialnetwork.validations.serviceValidation.services.PostValidationService;
 import kl.socialnetwork.validations.serviceValidation.services.UserValidationService;
@@ -193,6 +195,31 @@ public class CommentServiceTests {
         // Assert
         verify(mockCommentRepository).save(any());
         verifyNoMoreInteractions(mockCommentRepository);
+    }
+    @Test
+    public void deleteComment_whenUserAndCommentAreValid_deleteComment() throws Exception {
+        // Arrange
+        User user = UsersUtils.createUser();
+        Post post = PostsUtils.createPost(user, user);
+        Comment comment = CommentsUtils.createComment(user, user, post);
+
+        when(mockUserRepository.findById(any()))
+                .thenReturn(java.util.Optional.of(user));
+
+        when(mockCommentValidationService.isValid(any(Comment.class)))
+                .thenReturn(true);
+
+        when(mockCommentRepository.findById(any()))
+                .thenReturn(java.util.Optional.of(comment));
+
+        when(mockUserValidationService.isValid(any(User.class)))
+                .thenReturn(true);
+
+        // Act
+        CompletableFuture<Boolean> result = commentService.deleteComment("1", "1");
+
+        // Assert
+        assertTrue(result.get());
     }
 
 
